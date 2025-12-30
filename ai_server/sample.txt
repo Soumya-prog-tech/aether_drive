@@ -1,0 +1,74 @@
+MARS COLONY ALPHA - OPERATIONS MANUAL v4.2
+CONFIDENTIAL - AUTHORIZED PERSONNEL ONLY
+
+SECTION 1: MISSION OVERVIEW
+The Mars Colony Alpha (MCA) is humanity's first permanent settlement on the Red Planet. Located in the Jezero Crater, the primary objective of MCA is to establish a self-sustaining biosphere and conduct astrobiological research. The mission is funded by the United Earth Coalition (UEC) and currently hosts a population of 150 specialists. The mission commander is Dr. Elena Vance.
+
+SECTION 2: ENVIRONMENTAL SYSTEMS & LIFE SUPPORT
+2.1 Oxygen Generation
+Oxygen is generated primarily through MOXIE-IV units, which convert atmospheric CO2 into O2.
+- Normal operating range: 21.5% O2 concentration.
+- Warning Threshold: Below 19.5% triggers a Yellow Alert.
+- Critical Threshold: Below 18.0% triggers an automated habitat lockdown.
+- Backup Systems: Algae Bioreactors located in Sector 4 provide emergency oxygen for up to 72 hours.
+
+2.2 Water Recycling
+The Water Reclamation System (WRS) operates at 98.5% efficiency.
+- Daily Allowance: Each crew member is allocated 15 liters of water per day for consumption and hygiene.
+- Agriculture Usage: Hydroponics bays receive 45% of total recycled water.
+- Maintenance: WRS filters must be changed every 30 Sols.
+
+SECTION 3: DAILY SCHEDULE (STANDARD MARTIAN TIME)
+The colony operates on a 24-hour 39-minute Sol cycle.
+- 0600 - 0700: Wake up / Morning Hygiene
+- 0700 - 0800: Communal Breakfast (Sector 2 Mess Hall)
+- 0800 - 1200: Work Block Alpha (EVA Operations / Lab Work)
+- 1200 - 1300: Lunch / System Diagnostics Review
+- 1300 - 1700: Work Block Beta (Maintenance / Research)
+- 1700 - 1900: Mandatory Physical Exercise (Gravity compensation)
+- 1900 - 2000: Dinner
+- 2000 - 2200: Free Time / Communication with Earth (latency 12 mins)
+- 2200: Lights Out (essential personnel only)
+
+SECTION 4: EMERGENCY PROTOCOLS
+4.1 Solar Flare Events
+In the event of a Class-X Solar Flare detection:
+1. The AI Sentinel will sound a "Pattern Delta" alarm (three short sirens).
+2. All personnel must proceed immediately to the Radiation Storm Shelter in the Underground Level (B2).
+3. All non-essential electronics must be powered down to prevent EMP damage.
+4. Shelter lockdown remains in effect for minimum 4 hours post-peak.
+
+4.2 Hull Breach
+If a pressure drop >5% is detected:
+1. Automatic bulkheads will seal the affected sector within 3 seconds.
+2. Personnel trapped in the affected sector must equip Emergency Pressure Suits (EPS) located in red cabinets.
+3. Do not attempt to open bulkhead doors manually until pressure equalizes.
+
+SECTION 5: KEY PERSONNEL CONTACTS
+- Mission Commander: Dr. Elena Vance (ID: MCA-001)
+- Chief Engineer: Marcus Thorne (ID: MCA-004) - Specialist in fusion reactors.
+- Head of Astrobiology: Dr. Sarah Chen (ID: MCA-009)
+- Security Chief: Commander David Okonjo (ID: MCA-015)
+- IT Systems Administrator: Kevin Flynn (ID: MCA-042) - Contact for neural link calibration.
+
+SECTION 6: HYDROPONICS & DIET
+The colony is strictly vegetarian to maximize energy conversion efficiency.
+- Primary crops: Potatoes, Soybeans, Spinach, and Spirulina.
+- Protein source: Lab-grown cultured tissue is served on Sundays only.
+- Prohibited items: Personal plant cultivation in living quarters is strictly forbidden due to cross-contamination risks (Regulation 7.B).
+
+SECTION 7: ROVER OPERATIONS
+MCA maintains a fleet of 5 pressurized rovers.
+- Rover 1 (The Beagle): Long-range exploration (Range: 500km).
+- Rover 2 (The Hopper): Rapid transport (Speed: 60km/h).
+- Rovers 3-5: Heavy cargo transport.
+- Charging: Rovers must be docked by 1800 hours daily for solar array recharging.
+- Licensing: Only personnel with Class-A EVA certification may operate Rovers 1 and 2.
+
+SECTION 8: NETWORK & DATA SECURITY
+All internal data is encrypted using AES-4096.
+- The "Cortex" AI mainframe is located in the Server Room (Sector 1).
+- Physical access to the Server Room requires dual-key authentication from the Commander and IT Admin.
+- Unauthorized attempts to bypass the firewall will result in immediate suspension of Earth communication privileges.
+
+END OF DOCUMENT

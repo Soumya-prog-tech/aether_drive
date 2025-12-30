@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+// 1. Define the Service
+service AIService {
+  // Processes a document (PDF, Docx, etc.) into vectors
+  rpc IngestFile (IngestRequest) returns (stream IngestStatus);
+  
+  // Queries the indexed documents for answers
+  rpc ChatWithDocument (ChatRequest) returns (ChatResponse);
+}
+
+// 2. Define the Messages
+message IngestRequest {
+  // We send raw bytes so the AI server can parse complex files
+  bytes file_bytes = 1;      
+  string file_extension = 2; // e.g., ".pdf", ".pptx", ".xlsx"
+  string file_id = 3;
+  string user_id = 4;
+  
+  // The key used to re-encrypt chunks before saving to Qdrant
+  string file_key = 5;       
+  
+  // Toggle for enabling redaction 
+  bool enable_redaction = 6; 
+  bool force_reingest = 7;
+}
+
+message IngestStatus {
+  string status = 1;
+  string message = 2; 
+  bool success = 3;
+  int32 chunks_count = 4;
+}
+
+message ChatRequest {
+  string query = 1;
+  string user_id = 2;
+  
+  // List of file IDs to search through
+  repeated string file_ids = 3; 
+  
+  // Map of {file_id: file_key} so the AI can decrypt the retrieved snippets
+  map<string, string> file_keys = 4;
+  map<string, string> file_names = 5;
+}
+
+message ChatResponse {
+  string answer = 1;
+  
+  // List of decrypted text snippets used to generate the answer
+  repeated string sources = 2;
+}

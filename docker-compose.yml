@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # -----------------------------
+  # 1. The Brain: AI Microservice
+  # -----------------------------
+  ai-server:
+    container_name: cortex_ai
+    build:
+      context: ./ai_server
+      dockerfile: Dockerfile
+    # Generates gRPC code at startup before running the server
+    command: >
+      sh -c "python -m grpc_tools.protoc -I protos --python_out=. --grpc_python_out=. protos/cortex.proto && python -u server.py"
+    shm_size: '8gb' # Important for heavy ML models (Docling/PyTorch)
+    ports:
+      - "50051:50051"
+    environment:
+      - QDRANT_HOST=aether_qdrant
+      - QDRANT_PORT=6333
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - ./ai_server:/app       # Hot-reload code
+      - ./protos:/app/protos   # Share Protos folder
+    depends_on:
+      - qdrant_db
+    networks:
+      - aether-net
+
+  # -----------------------------
+  # 2. The Orchestrator: Main API
+  # -----------------------------
+  main-server:
+    container_name: main_server
+    build:
+      context: ./main_server
+      dockerfile: Dockerfile
+    # Generates gRPC code at startup before running FastAPI
+    command: >
+      sh -c "python -m grpc_tools.protoc -I protos --python_out=. --grpc_python_out=. protos/cortex.proto && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    ports:
+      - "8000:8000"
+    environment:
+      # Connects to 'postgres_db' service on port 5432
+      - DATABASE_URL=postgresql://aether_user:secure_password@postgres_db:5432/aether_db
+      # Connects to 'cortex_ai' container on port 50051
+      - CORTEX_AI_HOST=cortex_ai:50051
+      - AZURE_STORAGE_CONNECTION_STRING=${AZURE_STORAGE_CONNECTION_STRING}
+      - AZURE_CONTAINER_NAME=${AZURE_CONTAINER_NAME}
+      - SECRET_KEY=${SECRET_KEY}
+    volumes:
+      - ./main_server:/app     # Hot-reload code
+      - ./protos:/app/protos   # Share Protos folder
+    depends_on:
+      - postgres_db
+      - ai-server
+    networks:
+      - aether-net
+
+  # -----------------------------
+  # 3. The Memory: Vector DB
+  # -----------------------------
+  qdrant_db:
+    image: qdrant/qdrant:latest
+    container_name: aether_qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - aether-net
+
+  # -----------------------------
+  # 4. The Ledger: Relational DB
+  # -----------------------------
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: aether_postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=aether_user
+      - POSTGRES_PASSWORD=secure_password
+      - POSTGRES_DB=aether_db
+    ports:
+      - "5432:5432" # Exposed for local debugging (DBeaver/TablePlus)
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - aether-net
+
+# -----------------------------
+# Volumes & Networks
+# -----------------------------
+volumes:
+  qdrant_data:
+  postgres_data:
+
+networks:
+  aether-net:
+    driver: bridge

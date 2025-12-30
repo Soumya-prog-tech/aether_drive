@@ -1,0 +1,15 @@
+grpcio==1.64.1
+grpcio-tools==1.64.1
+sentence-transformers
+presidio-analyzer
+presidio-anonymizer
+spacy
+qdrant-client
+langchain-text-splitters
+google-genai
+cryptography
+docling
+docling-core
+docling[ocr]>=2.6.0
+docling[easyocr,rapidocr]>=2.6.0
+onnxruntime>=1.17.0
