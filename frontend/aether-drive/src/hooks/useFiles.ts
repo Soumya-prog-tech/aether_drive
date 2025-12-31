@@ -56,7 +56,7 @@ export const useFiles = (masterKey: Uint8Array | null) => {
             // 3️⃣ Import AES-GCM key
             const fileKey = await crypto.subtle.importKey(
               "raw",
-              fileKeyBytes,
+              fileKeyBytes as unknown as BufferSource,
               { name: "AES-GCM" },
               false,
               ["decrypt"]
@@ -76,6 +76,7 @@ export const useFiles = (masterKey: Uint8Array | null) => {
             return {
               ...item,
               name: metadata.filename,
+              thumbnail: metadata.thumbnail, // { type, mime, data }
             };
           } catch (err) {
             console.error("Metadata decrypt failed:", err);
@@ -112,6 +113,21 @@ export const useFiles = (masterKey: Uint8Array | null) => {
       const prev = history[history.length - 1];
       setHistory((h) => h.slice(0, -1));
       setCurrentFolder(prev);
+    },
+
+    createFolder: async (name: string) => {
+      if (!token) return;
+      try {
+        await axios.post(
+          `${BASE_URL}/api/v1/folders`,
+          { name, parent_id: currentFolder },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        await fetchItems();
+      } catch (error) {
+        console.error("Failed to create folder:", error);
+        throw error;
+      }
     },
 
     refresh: fetchItems,

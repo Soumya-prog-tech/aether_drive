@@ -1,4 +1,4 @@
-import { ArrowLeft, Upload, MessageSquare, LogOut, CheckSquare } from "lucide-react";
+import { ArrowLeft, Upload, MessageSquare, LogOut, CheckSquare, FolderPlus } from "lucide-react";
 
 interface Props {
   onBack: () => void;
@@ -6,6 +6,7 @@ interface Props {
   onAIChat: () => void;
   onLogout: () => void;
   onSelectFiles: () => void;
+  onCreateFolder: () => void;
   isSelectionMode: boolean;
 }
 
@@ -15,6 +16,7 @@ export const Toolbar = ({
   onAIChat,
   onLogout,
   onSelectFiles,
+  onCreateFolder,
   isSelectionMode
 }: Props) => {
   return (
@@ -37,6 +39,14 @@ export const Toolbar = ({
         >
           <Upload size={16} />
           Upload
+        </button>
+
+        <button
+          onClick={onCreateFolder}
+          className="flex items-center gap-2 px-4 py-2 bg-gray-800/50 hover:bg-gray-800 text-gray-300 hover:text-white rounded-lg transition-all border border-gray-700/50 hover:border-gray-600 text-sm font-medium"
+        >
+          <FolderPlus size={16} />
+          New Folder
         </button>
 
         <button

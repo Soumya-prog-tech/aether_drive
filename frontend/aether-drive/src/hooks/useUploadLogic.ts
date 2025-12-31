@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
@@ -7,6 +8,7 @@ import {
     encryptData,
     toB64,
 } from "../crypto/crypto-utils";
+import { generateThumbnail } from "../utils/thumbnailUtils";
 
 export type UploadStatus = "idle" | "encrypting" | "uploading" | "done";
 
@@ -44,14 +46,24 @@ export const useUploadLogic = (
                 ["encrypt"]
             );
 
+
+
+            // ...
+
             // 5. Encrypt file content
             const { ciphertext: encFile, iv: fileIv } = await encryptData(
                 fileKey,
                 fileBytes
             );
 
-            // 6. Encrypt metadata (filename)
-            const metaJson = JSON.stringify({ filename: file.name });
+            // 6. Generate Thumbnail & Encrypt Metadata
+            const thumbnail = await generateThumbnail(file);
+
+            const metaJson = JSON.stringify({
+                filename: file.name,
+                thumbnail: thumbnail // { type, mime, data } or null
+            });
+
             const { ciphertext: encMeta, iv: metaIv } = await encryptData(
                 fileKey,
                 metaJson

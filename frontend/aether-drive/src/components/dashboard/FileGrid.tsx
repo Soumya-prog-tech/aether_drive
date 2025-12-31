@@ -2,10 +2,17 @@ import { FileCard } from "./FileCard";
 import { EmptyState } from "./EmptyState";
 import { Loader2 } from "lucide-react";
 
+interface Thumbnail {
+  type: "image" | "icon";
+  mime: string;
+  data: string;
+}
+
 interface Item {
   id: string;
   type: "file" | "folder";
   name?: string;
+  thumbnail?: Thumbnail;
 }
 
 interface Props {

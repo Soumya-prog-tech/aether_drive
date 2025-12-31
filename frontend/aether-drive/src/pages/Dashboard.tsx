@@ -12,6 +12,7 @@ import { SelectionBar } from "../components/dashboard/SelectionBar";
 import { AIChatPanel } from "../components/ai/AIChatPanel";
 import { downloadAndDecrypt } from "../utils/downloadAndDecrypt";
 import { Loader2 } from "lucide-react";
+import { CreateFolderModal } from "../components/dashboard/CreateFolderModal";
 
 const Dashboard = () => {
   const { masterKey, token, logout } = useAuth();
@@ -23,6 +24,7 @@ const Dashboard = () => {
     goBack,
     openFolder,
     refresh,
+    createFolder,
   } = useFiles(masterKey);
 
   const {
@@ -48,6 +50,7 @@ const Dashboard = () => {
   } = useAIChat(masterKey, items, selectedFiles);
 
   const [showUpload, setShowUpload] = useState(false);
+  const [showCreateFolder, setShowCreateFolder] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
   const handleDownload = async (item: any) => {
@@ -78,6 +81,7 @@ const Dashboard = () => {
         <Toolbar
           onBack={goBack}
           onUpload={() => setShowUpload(true)}
+          onCreateFolder={() => setShowCreateFolder(true)}
           onAIChat={() => setShowChat(true)}
           onLogout={logout}
           onSelectFiles={enterSelectionMode}
@@ -101,6 +105,14 @@ const Dashboard = () => {
             onSuccess={refresh}
           />
         )}
+
+        {showCreateFolder && (
+          <CreateFolderModal
+            onClose={() => setShowCreateFolder(false)}
+            onCreate={createFolder}
+          />
+        )}
+
 
         {/* FLOATING SELECTION BAR */}
         {isSelectionMode && (
