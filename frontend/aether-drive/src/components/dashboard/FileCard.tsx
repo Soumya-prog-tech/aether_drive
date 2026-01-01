@@ -12,6 +12,8 @@ interface Item {
   type: "file" | "folder";
   name?: string;
   thumbnail?: Thumbnail;
+  size?: number;
+  updatedAt?: string;
 }
 
 interface Props {
@@ -22,6 +24,24 @@ interface Props {
   onToggleSelect: (item: Item) => void;
   onDownload: (item: Item) => void;
 }
+
+const formatSize = (bytes?: number) => {
+  if (!bytes) return "";
+  const units = ["B", "KB", "MB", "GB"];
+  let size = bytes;
+  let unitIndex = 0;
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex++;
+  }
+  return `${size.toFixed(1)} ${units[unitIndex]}`;
+};
+
+const formatDate = (dateString?: string) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+};
 
 export const FileCard = ({
   item,
@@ -51,58 +71,73 @@ export const FileCard = ({
       onClick={handleClick}
       className={`
         relative group cursor-pointer transition-all duration-200
-        rounded-xl border overflow-hidden
+        rounded-lg border overflow-hidden
         ${selected
           ? "border-blue-500 bg-blue-500/10 shadow-[0_0_0_1px_rgba(59,130,246,1)]"
-          : "border-gray-800 bg-[#1e293b]/40 hover:bg-[#1e293b]/80 hover:border-gray-600 hover:shadow-lg hover:-translate-y-0.5"
+          : "border-gray-800 bg-[#1e293b]/40 hover:bg-[#1e293b]/80 hover:border-gray-600 hover:shadow-md hover:-translate-y-0.5"
         }
       `}
     >
       {/* Thumbnail / Icon Container */}
-      <div className="aspect-[4/3] w-full relative flex items-center justify-center bg-[#0f172a]/30">
+      <div className="aspect-[3/2] w-full relative flex items-center justify-center bg-[#0f172a]/50">
         {item.type === "folder" ? (
-          <div className="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
-            <Folder size={24} />
+          <div className="transition-transform group-hover:scale-110 duration-200">
+            <Folder size={40} className="text-blue-400 fill-blue-500/20" />
           </div>
         ) : item.thumbnail ? (
           <img
             src={item.thumbnail.data}
             alt={item.name}
-            className="w-16 h-16 object-contain rounded-lg shadow-sm"
+            className="h-2/3 w-auto object-contain drop-shadow-md transition-transform group-hover:scale-105 duration-200"
           />
         ) : (
-          <div className="w-12 h-12 rounded-xl bg-gray-700/50 text-gray-400 flex items-center justify-center">
-            <File size={24} />
+          <div className="transition-transform group-hover:scale-110 duration-200">
+            <File size={36} className="text-gray-500" />
           </div>
         )}
 
         {/* Checkbox Overlay (Selection Mode) */}
         {selectionMode && item.type === "file" && (
-          <div className="absolute inset-0 bg-black/20 flex items-start justify-end p-2">
+          <div className="absolute inset-0 bg-black/10 flex items-start justify-end p-1.5">
             <div
               className={`
-                w-5 h-5 rounded-full border flex items-center justify-center transition-all bg-[#0f172a]
+                w-4 h-4 rounded-full border flex items-center justify-center transition-all bg-[#0f172a]
                 ${selected ? "bg-blue-500 border-blue-500" : "border-gray-500"}
               `}
             >
-              {selected && <CheckCircle2 size={12} className="text-white" />}
+              {selected && <CheckCircle2 size={10} className="text-white" />}
             </div>
           </div>
         )}
       </div>
 
       {/* Footer Info */}
-      <div className="p-3 border-t border-gray-800/50 bg-[#1e293b]/50">
-        <p className="text-xs font-medium text-gray-200 truncate" title={item.name}>
-          {item.name || "Unnamed"}
-        </p>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">
-            {item.type}
+      <div className="px-3 py-2 border-t border-gray-800/50 bg-[#1e293b]/50">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[13px] font-medium text-gray-200 truncate leading-none" title={item.name}>
+            {item.name || "Unnamed"}
+          </p>
+        </div>
+
+        {/* Metadata Subtext */}
+        <div className="flex items-center gap-1.5 mt-1.5 text-[10px] text-gray-500 font-medium leading-none">
+          <span className="uppercase tracking-wider text-gray-500/80">
+            {item.name?.split('.').pop()?.substring(0, 4) || item.type}
           </span>
+          {item.type === "file" && (
+            <>
+              <span className="text-gray-700">·</span>
+              <span>{formatSize(item.size)}</span>
+              {item.updatedAt && (
+                <>
+                  <span className="text-gray-700">·</span>
+                  <span>{formatDate(item.updatedAt)}</span>
+                </>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
   );
 };
-

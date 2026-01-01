@@ -77,6 +77,8 @@ export const useFiles = (masterKey: Uint8Array | null) => {
               ...item,
               name: metadata.filename,
               thumbnail: metadata.thumbnail, // { type, mime, data }
+              size: item.size,
+              updatedAt: item.updated_at,
             };
           } catch (err) {
             console.error("Metadata decrypt failed:", err);
