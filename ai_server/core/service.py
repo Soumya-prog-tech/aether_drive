@@ -18,22 +18,22 @@ class CortexService:
         """
         return self.rag_engine.file_exists(file_id)
 
-    def ingest_file(self, file_bytes, file_extension, file_id, user_id, enable_redaction=True, file_key=None, force_reindex=False):
+    def ingest_file(self, file_bytes, filename, file_id, user_id, enable_redaction=True, file_key=None, force_reindex=False):
         """
         Generator that yields status updates: (status_code, message, [optional_count])
         """
         # 0. Check Existence
         if self.is_file_ingested(file_id) and not force_reindex:
             # Yielding 0 as the count for skipped files
-            yield "SKIPPED", f"File {file_id} is already indexed.", 0
+            yield "SKIPPED", f"File {filename} is already indexed.", 0
             return
 
         # 1. Processing
-        yield "READING", f"Reading and analyzing {file_id}..."
-        file_full_name = f"{file_id}{file_extension}"
+        yield "READING", f"Reading and analyzing {filename}..."
+        
         
         try:
-            clean_text = processor.process_file_bytes(file_bytes, file_full_name)
+            clean_text = processor.process_file_bytes(file_bytes, filename)
         except Exception as e:
             raise RuntimeError(f"Docling failed: {e}")
 
@@ -47,8 +47,7 @@ class CortexService:
         meta = {
             "file_id": file_id, 
             "user_id": user_id, 
-            "extension": file_extension, 
-            "file_name": file_full_name
+            "filename": filename
         }
         points_data = self.vectorizer.process_text(clean_text, meta)
 
@@ -69,3 +68,15 @@ class CortexService:
         """
         response, sources = self.rag_engine.ask(query, user_id, file_ids, file_keys, file_names)
         return response, sources
+    
+    def delete_file(self, file_id: str, user_id: str):
+        """
+        Deletes all vectors for a file.
+        """
+        return self.rag_engine.delete_file(
+            file_id=file_id,
+            user_id=user_id
+        )
+
+    
+    

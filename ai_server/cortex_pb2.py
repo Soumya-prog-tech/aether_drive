@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x63ortex.proto\"\xa1\x01\n\rIngestRequest\x12\x12\n\nfile_bytes\x18\x01 \x01(\x0c\x12\x16\n\x0e\x66ile_extension\x18\x02 \x01(\t\x12\x0f\n\x07\x66ile_id\x18\x03 \x01(\t\x12\x0f\n\x07user_id\x18\x04 \x01(\t\x12\x10\n\x08\x66ile_key\x18\x05 \x01(\t\x12\x18\n\x10\x65nable_redaction\x18\x06 \x01(\x08\x12\x16\n\x0e\x66orce_reingest\x18\x07 \x01(\x08\"V\n\x0cIngestStatus\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x0f\n\x07success\x18\x03 \x01(\x08\x12\x14\n\x0c\x63hunks_count\x18\x04 \x01(\x05\"\x82\x02\n\x0b\x43hatRequest\x12\r\n\x05query\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\x12\x10\n\x08\x66ile_ids\x18\x03 \x03(\t\x12-\n\tfile_keys\x18\x04 \x03(\x0b\x32\x1a.ChatRequest.FileKeysEntry\x12/\n\nfile_names\x18\x05 \x03(\x0b\x32\x1b.ChatRequest.FileNamesEntry\x1a/\n\rFileKeysEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a\x30\n\x0e\x46ileNamesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"/\n\x0c\x43hatResponse\x12\x0e\n\x06\x61nswer\x18\x01 \x01(\t\x12\x0f\n\x07sources\x18\x02 \x03(\t2k\n\tAIService\x12-\n\nIngestFile\x12\x0e.IngestRequest\x1a\r.IngestStatus0\x01\x12/\n\x10\x43hatWithDocument\x12\x0c.ChatRequest\x1a\r.ChatResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x63ortex.proto\"\x9b\x01\n\rIngestRequest\x12\x12\n\nfile_bytes\x18\x01 \x01(\x0c\x12\x10\n\x08\x66ilename\x18\x02 \x01(\t\x12\x0f\n\x07\x66ile_id\x18\x03 \x01(\t\x12\x0f\n\x07user_id\x18\x04 \x01(\t\x12\x10\n\x08\x66ile_key\x18\x05 \x01(\t\x12\x18\n\x10\x65nable_redaction\x18\x06 \x01(\x08\x12\x16\n\x0e\x66orce_reingest\x18\x07 \x01(\x08\"V\n\x0cIngestStatus\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x0f\n\x07success\x18\x03 \x01(\x08\x12\x14\n\x0c\x63hunks_count\x18\x04 \x01(\x05\"\x82\x02\n\x0b\x43hatRequest\x12\r\n\x05query\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\x12\x10\n\x08\x66ile_ids\x18\x03 \x03(\t\x12-\n\tfile_keys\x18\x04 \x03(\x0b\x32\x1a.ChatRequest.FileKeysEntry\x12/\n\nfile_names\x18\x05 \x03(\x0b\x32\x1b.ChatRequest.FileNamesEntry\x1a/\n\rFileKeysEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\x1a\x30\n\x0e\x46ileNamesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"/\n\x0c\x43hatResponse\x12\x0e\n\x06\x61nswer\x18\x01 \x01(\t\x12\x0f\n\x07sources\x18\x02 \x03(\t\"5\n\x11\x44\x65leteFileRequest\x12\x0f\n\x07\x66ile_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\"6\n\x12\x44\x65leteFileResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xa2\x01\n\tAIService\x12-\n\nIngestFile\x12\x0e.IngestRequest\x1a\r.IngestStatus0\x01\x12/\n\x10\x43hatWithDocument\x12\x0c.ChatRequest\x1a\r.ChatResponse\x12\x35\n\nDeleteFile\x12\x12.DeleteFileRequest\x1a\x13.DeleteFileResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -26,17 +26,21 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_CHATREQUEST_FILENAMESENTRY']._loaded_options = None
   _globals['_CHATREQUEST_FILENAMESENTRY']._serialized_options = b'8\001'
   _globals['_INGESTREQUEST']._serialized_start=17
-  _globals['_INGESTREQUEST']._serialized_end=178
-  _globals['_INGESTSTATUS']._serialized_start=180
-  _globals['_INGESTSTATUS']._serialized_end=266
-  _globals['_CHATREQUEST']._serialized_start=269
-  _globals['_CHATREQUEST']._serialized_end=527
-  _globals['_CHATREQUEST_FILEKEYSENTRY']._serialized_start=430
-  _globals['_CHATREQUEST_FILEKEYSENTRY']._serialized_end=477
-  _globals['_CHATREQUEST_FILENAMESENTRY']._serialized_start=479
-  _globals['_CHATREQUEST_FILENAMESENTRY']._serialized_end=527
-  _globals['_CHATRESPONSE']._serialized_start=529
-  _globals['_CHATRESPONSE']._serialized_end=576
-  _globals['_AISERVICE']._serialized_start=578
-  _globals['_AISERVICE']._serialized_end=685
+  _globals['_INGESTREQUEST']._serialized_end=172
+  _globals['_INGESTSTATUS']._serialized_start=174
+  _globals['_INGESTSTATUS']._serialized_end=260
+  _globals['_CHATREQUEST']._serialized_start=263
+  _globals['_CHATREQUEST']._serialized_end=521
+  _globals['_CHATREQUEST_FILEKEYSENTRY']._serialized_start=424
+  _globals['_CHATREQUEST_FILEKEYSENTRY']._serialized_end=471
+  _globals['_CHATREQUEST_FILENAMESENTRY']._serialized_start=473
+  _globals['_CHATREQUEST_FILENAMESENTRY']._serialized_end=521
+  _globals['_CHATRESPONSE']._serialized_start=523
+  _globals['_CHATRESPONSE']._serialized_end=570
+  _globals['_DELETEFILEREQUEST']._serialized_start=572
+  _globals['_DELETEFILEREQUEST']._serialized_end=625
+  _globals['_DELETEFILERESPONSE']._serialized_start=627
+  _globals['_DELETEFILERESPONSE']._serialized_end=681
+  _globals['_AISERVICE']._serialized_start=684
+  _globals['_AISERVICE']._serialized_end=846
 # @@protoc_insertion_point(module_scope)

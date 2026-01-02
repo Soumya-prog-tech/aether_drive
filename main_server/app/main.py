@@ -2,6 +2,7 @@
 import os
 import json
 import grpc
+import base64
 import time
 from contextlib import asynccontextmanager
 from typing import List
@@ -244,6 +245,52 @@ def ingest_stream_generator(request: cortex_pb2.IngestRequest):
         error_data = {"status": "FAILED", "message": f"Internal Error: {str(e)}"}
         yield f"data: {json.dumps(error_data)}\n\n"
 
+
+@app.delete("/api/v1/files/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_file(
+    file_id: str,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(security.get_current_active_user)
+):
+    # 1. Verify ownership
+    db_file = crud.get_file_by_id(db=db, file_id=file_id, user_id=current_user.id)
+    if not db_file:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    try:
+        # 2. Delete from Cortex AI (Qdrant)
+        grpc_req = cortex_pb2.DeleteFileRequest(
+            file_id=file_id,
+            user_id=str(current_user.id)
+        )
+
+        grpc_resp = grpc_stub.DeleteFile(grpc_req, timeout=30)
+
+        if not grpc_resp.success:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Cortex deletion failed: {grpc_resp.message}"
+            )
+
+        # 3. Delete from Azure Blob Storage
+        await azure_handler.delete_file_from_azure(db_file.stored_filename)
+
+        # 4. Delete DB record
+        crud.delete_file_record(db=db, file_id=file_id, user_id=current_user.id)
+
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    except grpc.RpcError as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Cortex AI unavailable: {e.details()}"
+        )
+
+    except Exception as e:
+        print(f"File deletion failed: {e}")
+        raise HTTPException(status_code=500, detail="File deletion failed")
+
+
 @app.post("/api/v1/ai/ingest/{file_id}")
 async def ingest_file_for_ai(
     file_id: str,
@@ -270,17 +317,28 @@ async def ingest_file_for_ai(
                 key_b64=file_key,
                 iv_b64=db_file.file_iv
             )
+            enc_meta_bytes = base64.b64decode(db_file.encrypted_metadata)
+                    
+            decrypted_json_bytes = crypto_utils.decrypt_file_content(
+                 encrypted_bytes=enc_meta_bytes, 
+                 key_b64=file_key,
+                 iv_b64=db_file.metadata_iv
+)
+                    
+            # B. Parse JSON to get filename
+            metadata = json.loads(decrypted_json_bytes.decode('utf-8'))
+            real_name = metadata.get('filename', 'Unknown File')
         except ValueError:
              raise HTTPException(status_code=400, detail="Decryption failed. Invalid Key?")
 
         # 3. Prepare gRPC Request
-        ext = os.path.splitext(db_file.stored_filename)[1]
+        # ext = os.path.splitext(db_file.stored_filename)[1]
         
         grpc_request = cortex_pb2.IngestRequest(
             file_id=file_id,
             user_id=str(current_user.id),
             file_bytes=clean_bytes, # Sending DECRYPTED bytes
-            file_extension=ext,
+            filename=real_name,
             file_key=file_key, 
             enable_redaction=False,
             force_reingest=force_reingest

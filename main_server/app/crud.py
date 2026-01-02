@@ -94,3 +94,17 @@ def get_items_by_folder(db: Session, user_id: int, folder_id: str):
     files = db.exec(file_statement).all()
 
     return {"folders": folders, "files": files}
+
+
+def delete_file_record(db: Session, file_id: str, user_id: int):
+    file = db.exec(
+        select(models.File)
+        .where(models.File.id == file_id)
+        .where(models.File.owner_id == user_id)
+    ).first()
+
+    if not file:
+        raise ValueError("File not found")
+
+    db.delete(file)
+    db.commit()

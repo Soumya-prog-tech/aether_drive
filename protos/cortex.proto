@@ -7,13 +7,16 @@ service AIService {
   
   // Queries the indexed documents for answers
   rpc ChatWithDocument (ChatRequest) returns (ChatResponse);
+
+  // Delete File from the Qdrant Vector Database
+  rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse);
 }
 
 // 2. Define the Messages
 message IngestRequest {
   // We send raw bytes so the AI server can parse complex files
   bytes file_bytes = 1;      
-  string file_extension = 2; // e.g., ".pdf", ".pptx", ".xlsx"
+  string filename = 2; // e.g., ".pdf", ".pptx", ".xlsx"
   string file_id = 3;
   string user_id = 4;
   
@@ -49,4 +52,14 @@ message ChatResponse {
   
   // List of decrypted text snippets used to generate the answer
   repeated string sources = 2;
+}
+
+message DeleteFileRequest {
+  string file_id = 1;
+  string user_id = 2;
+}
+
+message DeleteFileResponse {
+  bool success = 1;
+  string message = 2;
 }

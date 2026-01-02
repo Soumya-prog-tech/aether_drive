@@ -268,6 +268,25 @@ class AetherHybridClient:
         except Exception as e:
             print(f"   ❌ Download Failed: {e}")
 
+    # =========================================================
+    # 🗑️ DELETE FILE (Tests DELETE /api/v1/files/{file_id})
+    # =========================================================
+    def delete_file(self, file_id: str):
+        print(f"\n--- 9. Deleting File {file_id[:8]} ---")
+        headers = {"Authorization": f"Bearer {self.token}"}
+
+        resp = requests.delete(
+            f"{BASE_URL}/api/v1/files/{file_id}",
+            headers=headers
+        )
+
+        if resp.status_code == 204:
+            print("   ✅ File deleted successfully (Azure + Qdrant + DB)")
+            return True
+        else:
+            print(f"   ❌ Delete failed [{resp.status_code}]: {resp.text}")
+            return False
+
 
 if __name__ == "__main__":
     
@@ -311,3 +330,21 @@ if __name__ == "__main__":
         target_file = next((i for i in items if i['type'] == 'file'), None)
         if target_file:
             client.download_and_decrypt(target_file, "downloaded_test_file.bin")
+    
+     # 7. ✅ NEW: Delete the file we just downloaded
+    if target_file:
+        client.delete_file(target_file['id'])
+
+        # 8. Verify deletion by listing again
+        print("\n--- 10. Verifying Deletion ---")
+        items_after = client.list_folder_content(folder_id)
+
+        still_exists = any(
+            i['type'] == 'file' and i['id'] == target_file['id']
+            for i in items_after
+        )
+
+        if still_exists:
+            print("   ❌ File still exists after deletion!")
+        else:
+            print("   ✅ File is gone. Deletion verified.")

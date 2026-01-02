@@ -90,3 +90,27 @@ async def download_file_bytes(blob_name: str) -> bytes:
         data = await download_stream.readall()
         
     return data
+
+async def delete_file_from_azure(blob_name: str):
+    """
+    Deletes a blob from Azure Blob Storage.
+    Safe + idempotent (no error if blob doesn't exist).
+    """
+    if not settings.AZURE_STORAGE_CONNECTION_STRING:
+        raise RuntimeError("Azure Storage connection string not set")
+
+    blob_service_client = BlobServiceClient.from_connection_string(
+        settings.AZURE_STORAGE_CONNECTION_STRING
+    )
+
+    async with blob_service_client:
+        blob_client = blob_service_client.get_blob_client(
+            container=settings.AZURE_CONTAINER_NAME,
+            blob=blob_name
+        )
+
+        try:
+            await blob_client.delete_blob()
+        except Exception as e:
+            # Azure throws if blob doesn't exist; you may ignore or log
+            print(f"Azure delete warning for {blob_name}: {e}")

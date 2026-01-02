@@ -39,6 +39,44 @@ class RAGEngine:
             )
         )
         return count_result.count > 0
+    
+    def delete_file(self, file_id: str, user_id: str | None = None):
+        """
+        Deletes all vectors belonging to a file.
+        Compatible with older Qdrant clients.
+        """
+
+        must_conditions = [
+            FieldCondition(
+                key="file_id",
+                match=MatchValue(value=file_id)
+            )
+        ]
+
+        # 🔐 Strong user isolation (recommended)
+        if user_id is not None:
+            must_conditions.append(
+                FieldCondition(
+                    key="user_id",
+                    match=MatchValue(value=user_id)
+                )
+            )
+
+        delete_filter = Filter(must=must_conditions)
+
+        # ✅ OLD + STABLE API (this is what your client expects)
+        self.qdrant.delete(
+            collection_name="aether_drive",
+            points_selector=delete_filter
+        )
+
+        return {
+            "success": True,
+            "message": "Vectors deleted successfully"
+        }
+
+
+
 
     def store_vectors(self, points_data: list, file_id: str, file_key: str):
         points = []
@@ -142,10 +180,4 @@ class RAGEngine:
         except Exception as e:
             return f"AI Error: {str(e)}", []
 
-    def delete_file(self, file_id: str):
-        self.qdrant.delete(
-            collection_name="aether_drive",
-            points_selector=Filter(
-                must=[FieldCondition(key="file_id", match=MatchValue(value=file_id))]
-            )
-        )
+    

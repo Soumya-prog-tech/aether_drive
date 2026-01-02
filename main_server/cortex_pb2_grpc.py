@@ -50,6 +50,11 @@ class AIServiceStub(object):
                 request_serializer=cortex__pb2.ChatRequest.SerializeToString,
                 response_deserializer=cortex__pb2.ChatResponse.FromString,
                 _registered_method=True)
+        self.DeleteFile = channel.unary_unary(
+                '/AIService/DeleteFile',
+                request_serializer=cortex__pb2.DeleteFileRequest.SerializeToString,
+                response_deserializer=cortex__pb2.DeleteFileResponse.FromString,
+                _registered_method=True)
 
 
 class AIServiceServicer(object):
@@ -70,6 +75,13 @@ class AIServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def DeleteFile(self, request, context):
+        """Delete File from the Qdrant Vector Database
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AIServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -82,6 +94,11 @@ def add_AIServiceServicer_to_server(servicer, server):
                     servicer.ChatWithDocument,
                     request_deserializer=cortex__pb2.ChatRequest.FromString,
                     response_serializer=cortex__pb2.ChatResponse.SerializeToString,
+            ),
+            'DeleteFile': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteFile,
+                    request_deserializer=cortex__pb2.DeleteFileRequest.FromString,
+                    response_serializer=cortex__pb2.DeleteFileResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -139,6 +156,33 @@ class AIService(object):
             '/AIService/ChatWithDocument',
             cortex__pb2.ChatRequest.SerializeToString,
             cortex__pb2.ChatResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeleteFile(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/AIService/DeleteFile',
+            cortex__pb2.DeleteFileRequest.SerializeToString,
+            cortex__pb2.DeleteFileResponse.FromString,
             options,
             channel_credentials,
             insecure,

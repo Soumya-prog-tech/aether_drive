@@ -47,6 +47,8 @@ const Dashboard = () => {
     runChat,
     useFullContext,
     setUseFullContext,
+    ingestStatus,
+    ingesting,
   } = useAIChat(masterKey, items, selectedFiles);
 
   const [showUpload, setShowUpload] = useState(false);
@@ -153,9 +155,12 @@ const Dashboard = () => {
         useFullContext={useFullContext}
         setUseFullContext={setUseFullContext}
         selectedCount={selectedFiles.length}
+        ingestStatus={ingestStatus}
+        ingesting={ingesting}
       />
     </div>
   );
 };
 
 export default Dashboard;
+

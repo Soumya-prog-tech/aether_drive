@@ -21,15 +21,15 @@ class CortexGRPCHandler(cortex_pb2_grpc.AIServiceServicer):
         """
         Receives a file upload and streams back status updates (SSE-style) via gRPC.
         """
-        file_id = request.file_id
-        logger.info(f"Received ingestion request for file: {file_id}")
+        filename=request.filename
+        logger.info(f"Received ingestion request for file: {filename}")
 
         try:
             # Call the generator from the service layer
             progress_generator = self.service.ingest_file(
                 file_bytes=request.file_bytes, 
-                file_extension=request.file_extension, 
-                file_id=file_id, 
+                filename=request.filename,
+                file_id=request.file_id, 
                 user_id=request.user_id, 
                 enable_redaction=request.enable_redaction, 
                 file_key=request.file_key, 
@@ -57,7 +57,7 @@ class CortexGRPCHandler(cortex_pb2_grpc.AIServiceServicer):
                 )
 
         except Exception as e:
-            logger.error(f"❌ Ingestion Error for {file_id}: {e}")
+            logger.error(f"❌ Ingestion Error for {filename}: {e}")
             # Send a final 'FAILED' status so the client stops listening
             yield cortex_pb2.IngestStatus(
                 status="FAILED",
@@ -78,6 +78,34 @@ class CortexGRPCHandler(cortex_pb2_grpc.AIServiceServicer):
         except Exception as e:
             logger.error(f"❌ Chat Error: {e}")
             return cortex_pb2.ChatResponse(answer=f"Error: {str(e)}", sources=[])
+        
+    def DeleteFile(self, request, context):
+        """
+        Deletes all vectors for a file from Qdrant.
+        """
+        logger.info(
+            f"🗑️ Delete request received | file_id={request.file_id} user_id={request.user_id}"
+        )
+
+        try:
+            result = self.service.delete_file(
+                file_id=request.file_id,
+                user_id=request.user_id
+            )
+
+            return cortex_pb2.DeleteFileResponse(
+                success=result["success"],
+                message=result["message"]
+            )
+
+        except Exception as e:
+            logger.error(f"❌ DeleteFile error: {e}")
+            return cortex_pb2.DeleteFileResponse(
+                success=False,
+                message=str(e)
+            )
+
+    
 
 def serve():
     # 2. Add options to handle large messages (important for PDF uploads)

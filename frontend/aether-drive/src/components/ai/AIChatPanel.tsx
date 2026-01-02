@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { X, Bot, Send, Sparkles, FileText, FolderOpen } from "lucide-react";
+import { X, Bot, Send, Sparkles, FileText, FolderOpen, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -14,6 +14,8 @@ interface Props {
   useFullContext: boolean;
   setUseFullContext: (v: boolean) => void;
   selectedCount: number;
+  ingestStatus: string[];
+  ingesting: boolean;
 }
 
 export const AIChatPanel = ({
@@ -27,8 +29,11 @@ export const AIChatPanel = ({
   useFullContext,
   setUseFullContext,
   selectedCount,
+  ingestStatus,
+  ingesting,
 }: Props) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const statusRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when response updates
   useEffect(() => {
@@ -36,6 +41,13 @@ export const AIChatPanel = ({
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [response, loading]);
+
+  // Auto-scroll status panel
+  useEffect(() => {
+    if (statusRef.current) {
+      statusRef.current.scrollTop = statusRef.current.scrollHeight;
+    }
+  }, [ingestStatus]);
 
   if (!open) return null;
 
@@ -66,7 +78,27 @@ export const AIChatPanel = ({
         className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth custom-scrollbar"
         ref={scrollRef}
       >
-        {!response && !loading && (
+        {/* Ingestion Status Panel */}
+        {ingesting && (
+          <div className="mb-4 bg-[#0f172a] border border-gray-700 rounded-lg p-3 text-xs text-gray-300 shadow-lg">
+            <div className="font-semibold text-blue-400 mb-2 flex items-center gap-2">
+              <Loader2 size={12} className="animate-spin" />
+              📥 Ingesting files...
+            </div>
+            <div
+              ref={statusRef}
+              className="font-mono space-y-1 max-h-32 overflow-y-auto custom-scrollbar"
+            >
+              {ingestStatus.map((s, i) => (
+                <div key={i} className="opacity-90 animate-in fade-in slide-in-from-bottom-1 duration-200">
+                  {s}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!response && !loading && !ingesting && (
           <div className="h-full flex flex-col items-center justify-center text-center text-gray-500 space-y-4 opacity-60">
             <div className="w-16 h-16 rounded-full bg-gray-800/50 flex items-center justify-center">
               <Sparkles size={32} className="text-blue-400" />
